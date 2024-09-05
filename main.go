@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/whyttea/lenslocked/controllers"
 	"github.com/whyttea/lenslocked/views"
 )
 
@@ -19,31 +20,20 @@ func executeTemplate(w http.ResponseWriter, filepath string) {
 	tpl.Execute(w, nil)
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+// func homeHandler(w http.ResponseWriter, r *http.Request) {
 
-	tplPath := filepath.Join("templates", "home.gohtml")
-	executeTemplate(w, tplPath)
+// 	tplPath := filepath.Join("templates", "home.gohtml")
+// 	executeTemplate(w, tplPath)
 
-	// IDparam := chi.URLParam(r, "id")
-	// ctx := r.Context()
-	// key := ctx.Value("key").(string)
+// IDparam := chi.URLParam(r, "id")
+// ctx := r.Context()
+// key := ctx.Value("key").(string)
 
-	// w.Write([]byte(fmt.Sprintf("New ID is %v, %v", IDparam, key)))
-	// response := fmt.Sprintf("<h2>%s</h2>", IDparam)
-	// fmt.Fprint(w, response)
+// w.Write([]byte(fmt.Sprintf("New ID is %v, %v", IDparam, key)))
+// response := fmt.Sprintf("<h2>%s</h2>", IDparam)
+// fmt.Fprint(w, response)
 
-}
-
-func contactHandler(w http.ResponseWriter, r *http.Request) {
-
-	tplPath := filepath.Join("templates", "contact.gohtml")
-	executeTemplate(w, tplPath)
-}
-
-func faqHandler(w http.ResponseWriter, r *http.Request) {
-	// alternative to pathing the var with just joining inside of the func call
-	executeTemplate(w, filepath.Join("templates", "faq.gohtml"))
-}
+// }
 
 // type Router struct {
 // }
@@ -62,23 +52,30 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
 // 	}
 // }
 
-// func pathHandler(w http.ResponseWriter, r *http.Request) {
-// 	switch r.URL.Path {
-// 	case "/":
-// 		homeHandler(w, r)
-// 	case "/contact":
-// 		contactHandler(w, r)
-// 	default:
-// 		// TODO: add the defualt page
-// 		http.Error(w, "Page not found", http.StatusNotFound)
-// 	}
-// }
+//	func pathHandler(w http.ResponseWriter, r *http.Request) {
+//		switch r.URL.Path {
+//		case "/":
+//			homeHandler(w, r)
+//		case "/contact":
+//			contactHandler(w, r)
+//		default:
+//			// TODO: add the defualt page
+//			http.Error(w, "Page not found", http.StatusNotFound)
+//		}
+//	}
 
 func main() {
 	r := chi.NewRouter()
-	r.Get("/", homeHandler)
-	r.Get("/contact", contactHandler)
-	r.Get("/faq", faqHandler)
+
+	tpl := views.Must(views.Parse(filepath.Join("templates", "home.gohtml")))
+	r.Get("/", controllers.StaticHandler(tpl))
+
+	tpl = views.Must(views.Parse(filepath.Join("templates", "contact.gohtml")))
+	r.Get("/contact", controllers.StaticHandler(tpl))
+
+	tpl = views.Must(views.Parse(filepath.Join("templates", "faq.gohtml")))
+	r.Get("/faq", controllers.StaticHandler(tpl))
+
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Page not found", http.StatusNotFound)
 	})
