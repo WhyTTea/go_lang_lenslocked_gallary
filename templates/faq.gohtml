@@ -1,4 +1,10 @@
 <h1>FAQ page</h1>
 <ul>
-<li><b>Q: How do I contact support?</b> A: Email us - <a href="mailto:support@lenslocked.com">support@lenslocked.com</a>.</li> 
+{{range .}}
+    {{template "qa" .}}
+{{end}}
 </ul>
+
+{{define "qa"}}
+<li><b>{{.Question}}</b> {{.Answer}}</li>
+{{end}}
