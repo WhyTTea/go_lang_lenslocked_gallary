@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  #our db
+  db: #the service name
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: baloo # env var
+      POSTGRES_PASSWORD: junglebook
+      POSTGRES_DB: lenslocked #DB name
+    ports: #expose ports so that apps not running via docker-compose can connect to them
+      - 5432:5432 #format: "port on our machine":"port on container"
+  # Adminer provides a nice little web UI to connect to databases
+  adminer:
+    image: adminer
+    restart: always
+    environment:
+      ADMINER_DESIGN: dracula
+    ports:
+      - 3333:8080
